@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width">
+   <title>CS180 Final Project</title>
+   <style>
+       body {
+           font-family: Arial, sans-serif;
+           background-color: #202123;
+           color: #ffffff;
+           line-height: 1.6;
+           padding: 20px;
+           max-width: 1200px;
+           margin: 0 auto;
+       }
+       h1, h2, h3 { color: #10a37f; }
+       h1, h2 { text-align: center; }
+       .section {
+           margin-bottom: 40px;
+           border-bottom: 1px solid #333;
+           padding-bottom: 20px;
+       }
+       .config-row {
+           margin: 20px 0;
+           text-align: center;
+       }
+       .config-row img {
+           max-width: 100%;
+           margin: 10px 0;
+       }
+       .image-description {
+           color: #aaa;
+           text-align: center;
+           font-size: 14px;
+           margin-top: 5px;
+       }
+       .config-description {
+           margin: 20px 0;
+           padding: 15px;
+           background-color: #2d2d2d;
+           border-radius: 5px;
+       }
+   </style>
+</head>
+<body>
+   <h1>Project Deliverables</h1>
+
+   <div class="section">
+       <h2>Part 1: 2d NeRF</h2>
+       
+       <div class="config-description">
+           <p>I explored five different configurations:</p>
+           <ol>
+               <li>Baseline: 3 layers, 256 channels, frequency encoding level 10, learning rate 1e-2</li>
+               <li>Deeper network: 5 layers, 256 channels, frequency encoding level 10, learning rate 1e-2</li>
+               <li>Wider network (optimal): 3 layers, 512 channels, frequency encoding level 10, learning rate 1e-2</li>
+               <li>Lower frequency encoding: 3 layers, 256 channels, frequency encoding level 6, learning rate 1e-2</li>
+               <li>Lower learning rate: 3 layers, 256 channels, frequency encoding level 10, learning rate 1e-3</li>
+           </ol>
+           <p>The wider network (configuration 3) showed the best performance and was used for additional image.</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/v0.png" alt="Baseline Results">
+           <p class="image-description">Baseline Configuration Progress (Steps: 0, 500, 1000, 1500, 2000)</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/v1.png" alt="Deeper Network Results">
+           <p class="image-description">Deeper Network Progress</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/v2.png" alt="Wider Network Results">
+           <p class="image-description">Wider Network Progress (Best Parameter)</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/v3.png" alt="Lower Frequency Results">
+           <p class="image-description">Lower Frequency Encoding Progress</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/v4.png" alt="Lower Learning Rate Results">
+           <p class="image-description">Lower Learning Rate Progress</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/vis5.png" alt="Combined Loss Curves">
+           <p class="image-description">PSNR curves for all configurations</p>
+       </div>
+
+       <h3>Additional Test Image</h3>
+       <div class="config-row">
+           <img src="data/vis6.png" alt="Additional Image Results">
+           <p class="image-description">Additional Test Image Progress using Optimal Configuration</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/vis7.png" alt="Additional Loss Curve">
+           <p class="image-description">PSNR curve for additional test image</p>
+       </div>
+   </div>
+
+   <div class="section">
+       <h2>Part 2: 3d NeRF</h2>
+
+       <div class="description">
+        In Part 2, I implemented the NeRF to represent a 3D scene of a Lego model from multiple viewpoints by performing several key steps. First, I handled ray generation and camera transformation by converting pixel coordinates to camera space and then to world space rays, generating rays with origins and directions for each pixel while managing camera intrinsics (focal length) and extrinsics (camera poses). Next, during point sampling, I sampled points along each ray between near (2.0) and far (6.0) bounds using stratified sampling with random perturbation for improved training, creating 32 samples per ray for density and color prediction. The NeRF architecture employed positional encoding for coordinates (L=10) and viewing directions (L=4), utilizing a hierarchical network structure with skip connections to output density (σ) and RGB colors for each sampled point. For volume rendering, I accumulated color and density along rays using the volume rendering equation, calculated alpha compositing weights through transmittance, and rendered final pixel colors by integrating along rays. Throughout training, visualization demonstrated the model's progress from random noise to a clear representation of the Lego model. Finally, I rendered novel views using test camera poses, initially with a traditional black background and subsequently with a green background.
+        </div>
+
+        <h3>Ray visualization</h3>
+        <div class="config-row">
+            <img src="data/ray1.png" alt="ray1">
+            <p class="image-description"></p>
+        </div>
+    
+        <div class="config-row">
+            <img src="data/ray2.png" alt="ray2">
+            <p class="image-description"></p>
+        </div>
+
+       <h3>Training Progress</h3>
+       <div class="results-grid">
+           <div>
+               <img src="data/vis8.png" alt="Step 0">
+               <p class="image-description">Step 0</p>
+           </div>
+           <div>
+               <img src="data/vis9.png" alt="Step 500">
+               <p class="image-description">Step 1000</p>
+           </div>
+           <div>
+               <img src="data/vis10.png" alt="Step 1000">
+               <p class="image-description">Step 2000</p>
+           </div>
+           <div>
+               <img src="data/vis11.png" alt="Step 1500">
+               <p class="image-description">Step 3000</p>
+           </div>
+           <div>
+               <img src="data/vis12.png" alt="Step 2000">
+               <p class="image-description">Step 4000</p>
+           </div>
+       </div>
+   
+       <div class="config-row">
+           <img src="data/vis13.png" alt="NeRF Training Loss">
+           <p class="image-description">Training loss curve</p>
+       </div>
+   
+       <div class="config-row">
+           <img src="data/black.gif" alt="Black Background Rendering" loop autoplay>
+           <p class="image-description">Black background</p>
+       </div>
+   
+       <div class="config-row">
+           <img src="data/green.gif" alt="Green Background Rendering" loop autoplay>
+           <p class="image-description">Green background</p>
+       </div>
+   </div>
