@@ -41,24 +41,64 @@
            background-color: #2d2d2d;
            border-radius: 5px;
        }
+       .description {
+           margin: 20px 0;
+           text-align: justify;
+           padding: 15px;
+       }
+       .results-grid {
+           display: grid;
+           grid-template-columns: repeat(5, 1fr);
+           gap: 15px;
+           margin: 20px 0;
+       }
+       .results-grid img {
+           width: 100%;
+           height: auto;
+       }
    </style>
 </head>
 <body>
    <h1>Project Deliverables</h1>
 
    <div class="section">
-       <h2>Part 1: 2d NeRF</h2>
+       <h2>Part 1: 2D NeRF</h2>
+
+       <div class="description">
+           <p>In this part, we create a neural field that can represent a 2D image by training an MLP that maps 2D coordinates to RGB colors. The architecture includes positional encoding to help the network better represent high-frequency details.</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/mlp_2d.jpg" alt="MLP Architecture">
+           <p class="image-description">MLP Architecture for 2D Neural Field</p>
+       </div>
+
+       <div class="config-row">
+           <img src="data/pe.png" alt="Positional Encoding">
+           <p class="image-description">Positional Encoding Visualization</p>
+       </div>
+
+       <div class="config-description">
+           <p>Training Parameters:</p>
+           <ul>
+               <li>Loss Function: Mean Squared Error</li>
+               <li>Optimizer: Adam with learning rate 1e-2</li>
+               <li>Training Iterations: 2000</li>
+               <li>Batch Size: 10,000</li>
+               <li>Model Architecture: Exactly as the figure above</li>
+           </ul>
+       </div>
        
        <div class="config-description">
            <p>I explored five different configurations:</p>
            <ol>
                <li>Baseline: 3 layers, 256 channels, frequency encoding level 10, learning rate 1e-2</li>
                <li>Deeper network: 5 layers, 256 channels, frequency encoding level 10, learning rate 1e-2</li>
-               <li>Wider network (optimal): 3 layers, 512 channels, frequency encoding level 10, learning rate 1e-2</li>
+               <li>Wider network: 3 layers, 512 channels, frequency encoding level 10, learning rate 1e-2</li>
                <li>Lower frequency encoding: 3 layers, 256 channels, frequency encoding level 6, learning rate 1e-2</li>
                <li>Lower learning rate: 3 layers, 256 channels, frequency encoding level 10, learning rate 1e-3</li>
            </ol>
-           <p>The wider network (configuration 3) showed the best performance and was used for additional image.</p>
+           <p>The wider network (configuration 3) showed the best performance as shown in the PSNR curves, and was used for additional image.</p>
        </div>
 
        <div class="config-row">
@@ -94,32 +134,91 @@
        <h3>Additional Test Image</h3>
        <div class="config-row">
            <img src="data/vis6.png" alt="Additional Image Results">
-           <p class="image-description">Additional Test Image Progress using Optimal Configuration</p>
+           <p class="image-description">Additional Test Image Progress</p>
        </div>
 
        <div class="config-row">
            <img src="data/vis7.png" alt="Additional Loss Curve">
-           <p class="image-description">PSNR curve for additional test image</p>
+           <p class="image-description">PSNR curve for additional image</p>
        </div>
    </div>
 
    <div class="section">
-       <h2>Part 2: 3d NeRF</h2>
+       <h2>Part 2: 3D NeRF</h2>
 
        <div class="description">
-        In Part 2, I implemented the NeRF to represent a 3D scene of a Lego model from multiple viewpoints by performing several key steps. First, I handled ray generation and camera transformation by converting pixel coordinates to camera space and then to world space rays, generating rays with origins and directions for each pixel while managing camera intrinsics (focal length) and extrinsics (camera poses). Next, during point sampling, I sampled points along each ray between near (2.0) and far (6.0) bounds using stratified sampling with random perturbation for improved training, creating 32 samples per ray for density and color prediction. The NeRF architecture employed positional encoding for coordinates (L=10) and viewing directions (L=4), utilizing a hierarchical network structure with skip connections to output density (σ) and RGB colors for each sampled point. For volume rendering, I accumulated color and density along rays using the volume rendering equation, calculated alpha compositing weights through transmittance, and rendered final pixel colors by integrating along rays. Throughout training, visualization demonstrated the model's progress from random noise to a clear representation of the Lego model. Finally, I rendered novel views using test camera poses, initially with a traditional black background and subsequently with a green background.
-        </div>
-
-        <h3>Ray visualization</h3>
-        <div class="config-row">
-            <img src="data/ray1.png" alt="ray1">
-            <p class="image-description"></p>
-        </div>
+        <p>In Part 2, I implemented the NeRF to represent a 3D scene of a Lego model from multiple viewpoints through the following technical steps:</p>
+        
+        <ol>
+            <li><strong>Ray Generation From Cameras:</strong>
+                <ul>
+                    <li>Implemented coordinate transformation between world and camera spaces using transformation matrices</li>
+                    <li>Handled camera intrinsics (focal length) through standard pinhole model</li>
+                    <li>Generated rays by computing origins and directions for each pixel</li>
+                    <li>The implementation ensured correct handling of camera extrinsics through transformations</li>
+                </ul>
+            </li>
+            
+            <li><strong>Point Sampling Along Rays:</strong>
+                <ul>
+                    <li>Implemented stratified sampling between near and far bounds (2.0-6.0)</li>
+                    <li>Added random perturbations during training for better convergence</li>
+                    <li>Used 32 samples per ray as optimal balance between quality and computation</li>
+                    <li>Computed 3D coordinates for each sample point along rays</li>
+                </ul>
+            </li>
+            
+            <li><strong>NeRF Architecture:</strong>
+                <ul>
+                    <li>Employ positional encoding for coordinates (L=10) and viewing directions (L=4)</li>
+                    <li>Utilize hierarchical network structure with skip connections</li>
+                    <li>Output density (σ) and RGB colors for each sampled point</li>
+                </ul>
+            </li>
     
-        <div class="config-row">
-            <img src="data/ray2.png" alt="ray2">
-            <p class="image-description"></p>
-        </div>
+            <li><strong>Volume Rendering:</strong>
+                <ul>
+                    <li>Implemented accumulated color and density computation along rays</li>
+                    <li>Applied alpha compositing using transmittance computation</li>
+                    <li>Generated final pixel colors through integration along rays</li>
+                    <li>B&W: Implemented different background colors (black -> green)</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+       <div class="config-row">
+           <img src="data/mlp_nerf.png" alt="NeRF Architecture">
+           <p class="image-description">NeRF Network Architecture</p>
+       </div>
+
+       <div class="config-description">
+           <p>Training Parameters:</p>
+           <ul>
+               <li>Loss Function: Mean Squared Error</li>
+               <li>Optimizer: Adam with learning rate 5e-4</li>
+               <li>Training Iterations: 4000</li>
+               <li>Batch Size: 10,000</li>
+               <li>Number of Samples per Ray: 32</li>
+               <li>Near and Far Bounds: 2.0, 6.0</li>
+           </ul>
+       </div>
+
+       <div class="config-row">
+           <img src="data/formula.png" alt="Volume Rendering Formula">
+           <p class="image-description">Discrete Volume Rendering Equation</p>
+       </div>
+
+       <h3>Ray Visualization</h3>
+       <div class="config-row">
+           <img src="data/ray1.png" alt="ray1">
+           <p class="image-description">Ray Visualization 1</p>
+       </div>
+    
+       <div class="config-row">
+           <img src="data/ray2.png" alt="ray2">
+           <p class="image-description">Ray Visualization 2</p>
+       </div>
 
        <h3>Training Progress</h3>
        <div class="results-grid">
@@ -160,3 +259,5 @@
            <p class="image-description">Green background</p>
        </div>
    </div>
+</body>
+</html>
